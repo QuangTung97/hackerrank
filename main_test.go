@@ -6,81 +6,37 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func toList(elems ...int) *ListNode {
-	var result *ListNode
-	next := &result
-	for _, x := range elems {
-		*next = &ListNode{
-			Val: x,
-		}
-		next = &(*next).Next
-	}
-	return result
-}
-
-func TestTwoNumbers_ToList(t *testing.T) {
-	l := toList(3, 2, 1)
-	assert.Equal(t, 3, l.Val)
-	assert.Equal(t, 2, l.Next.Val)
-	assert.Equal(t, 1, l.Next.Next.Val)
-	assert.Nil(t, l.Next.Next.Next)
-}
-
-func assertEqual(t *testing.T, expect []int, l *ListNode) {
-	var result []int
-	for l != nil {
-		result = append(result, l.Val)
-		l = l.Next
-	}
-	assert.Equal(t, expect, result)
-}
-
-func TestTwoNumbers(t *testing.T) {
+func TestBitSet(t *testing.T) {
 	t.Run("normal", func(t *testing.T) {
-		result := addTwoNumbers(
-			toList(2),
-			toList(3),
-		)
-		assertEqual(t, []int{5}, result)
-	})
+		var b bitset
+		b.add(0)
+		assert.Equal(t, [2]uint64{1, 0}, b.data)
 
-	t.Run("normal", func(t *testing.T) {
-		result := addTwoNumbers(
-			toList(6),
-			toList(7),
-		)
-		assertEqual(t, []int{3, 1}, result)
-	})
+		b.add(2)
+		assert.Equal(t, [2]uint64{0x5, 0}, b.data)
 
-	t.Run("add two zeros", func(t *testing.T) {
-		result := addTwoNumbers(
-			toList(0),
-			toList(0),
-		)
-		assertEqual(t, []int{0}, result)
-	})
+		assert.Equal(t, false, b.existed(1))
+		assert.Equal(t, true, b.existed(2))
 
-	t.Run("one longer than other", func(t *testing.T) {
-		result := addTwoNumbers(
-			toList(1, 2, 3),
-			toList(7),
-		)
-		assertEqual(t, []int{8, 2, 3}, result)
-	})
+		b.add(63)
+		assert.Equal(t, [2]uint64{0x8000_0000_0000_0005, 0}, b.data)
 
-	t.Run("one longer than other, with remainders", func(t *testing.T) {
-		result := addTwoNumbers(
-			toList(5, 2, 3),
-			toList(7, 8),
-		)
-		assertEqual(t, []int{2, 1, 4}, result)
-	})
+		assert.Equal(t, false, b.existed(62))
+		assert.Equal(t, true, b.existed(63))
 
-	t.Run("zero in middle", func(t *testing.T) {
-		result := addTwoNumbers(
-			toList(1, 6, 0, 3),
-			toList(6, 3, 0, 8, 9),
-		)
-		assertEqual(t, []int{7, 9, 0, 1, 0, 1}, result)
+		b.add(64)
+		b.add(66)
+		assert.Equal(t, [2]uint64{0x8000_0000_0000_0005, 0x5}, b.data)
+
+		assert.Equal(t, true, b.existed(66))
+		assert.Equal(t, false, b.existed(67))
 	})
+}
+
+func TestLongestSubString(t *testing.T) {
+	assert.Equal(t, 3, lengthOfLongestSubstring("abcabcbb"))
+}
+
+func TestLongestSubString_Start(t *testing.T) {
+	assert.Equal(t, 3, lengthOfLongestSubstring("abc"))
 }

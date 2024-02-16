@@ -1,48 +1,47 @@
 package main
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
+type bitset struct {
+	data [2]uint64
 }
 
-func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-	result := addTwoNumbersRemainder(l1, l2, 0)
-	if result == nil {
-		return &ListNode{
-			Val: 0,
+const shift = 6
+const mask = (1 << shift) - 1
+
+func (b *bitset) add(input int) {
+	x := uint64(input)
+	outer := x >> shift
+	offset := x & mask
+	oneHot := uint64(1 << offset)
+	b.data[outer] |= oneHot
+}
+
+func (b *bitset) existed(input int) bool {
+	x := uint64(input)
+	outer := x >> shift
+	offset := x & mask
+	oneHot := uint64(1 << offset)
+	return (b.data[outer] & oneHot) > 0
+}
+
+func lengthOfLongestSubstring(s string) int {
+	maxLen := 0
+
+	byteArr := []byte(s)
+	for i := range byteArr {
+		var set bitset
+		for j := i; j < len(byteArr); j++ {
+			ch := byteArr[j]
+			if set.existed(int(ch)) {
+				break
+			}
+			set.add(int(ch))
+
+			newLen := j - i + 1
+			if maxLen < newLen {
+				maxLen = newLen
+			}
 		}
 	}
-	return result
-}
 
-func addTwoNumbersRemainder(l1 *ListNode, l2 *ListNode, remainder int) *ListNode {
-	aVal := 0
-	var nextL1 *ListNode
-	if l1 != nil {
-		aVal = l1.Val
-		nextL1 = l1.Next
-	}
-
-	bVal := 0
-	var nextL2 *ListNode
-	if l2 != nil {
-		bVal = l2.Val
-		nextL2 = l2.Next
-	}
-
-	sum := aVal + bVal + remainder
-	if sum == 0 && l1 == nil && l2 == nil {
-		return nil
-	}
-
-	newRemainder := 0
-	if sum >= 10 {
-		newRemainder = 1
-		sum -= 10
-	}
-
-	return &ListNode{
-		Val:  sum,
-		Next: addTwoNumbersRemainder(nextL1, nextL2, newRemainder),
-	}
+	return maxLen
 }
