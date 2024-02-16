@@ -1,22 +1,23 @@
 package main
 
-func maxArea(height []int) int {
-	left := 0
-	right := len(height) - 1
-
-	var maxVal = 0
-
-	for left < right {
-		current := min(height[left], height[right]) * (right - left)
-		if current > maxVal {
-			maxVal = current
+func longestCommonPrefix(strs []string) string {
+	end := 0
+Outer:
+	for {
+		index := end
+		if index >= len(strs[0]) {
+			break
 		}
-		if height[left] < height[right] {
-			left++
-		} else {
-			right--
+		firstCh := strs[0][index]
+		for _, s := range strs[1:] {
+			if index >= len(s) {
+				break Outer
+			}
+			if s[index] != firstCh {
+				break Outer
+			}
 		}
+		end++
 	}
-
-	return maxVal
+	return strs[0][:end]
 }
