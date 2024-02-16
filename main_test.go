@@ -7,19 +7,9 @@ import (
 )
 
 func TestExample(t *testing.T) {
-	t.Run("3", func(t *testing.T) {
-		assert.Equal(t, "PAHNAPLSIIGYIR", convert("PAYPALISHIRING", 3))
-	})
-
-	t.Run("4", func(t *testing.T) {
-		assert.Equal(t, "PINALSIGYAHRPI", convert("PAYPALISHIRING", 4))
-	})
-
-	t.Run("1", func(t *testing.T) {
-		assert.Equal(t, "A", convert("A", 1))
-	})
-
-	t.Run("special", func(t *testing.T) {
-		assert.Equal(t, "ABDC", convert("ABCD", 3))
-	})
+	assert.Equal(t, 321, reverse(123))
+	assert.Equal(t, -321, reverse(-123))
+	assert.Equal(t, 21, reverse(120))
+	assert.Equal(t, 0, reverse(1563847412))
+	assert.Equal(t, 0, reverse(1534236469))
 }

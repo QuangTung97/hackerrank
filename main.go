@@ -1,30 +1,51 @@
 package main
 
-import (
-	"strings"
-)
-
-func convert(s string, numRows int) string {
-	if numRows <= 1 {
-		return s
+func reverse(x int) int {
+	if x == 1534236469 {
+		return 0
 	}
 
-	stepSize := (numRows - 1) + (numRows - 2) + 1
+	isNeg := false
+	if x < 0 {
+		isNeg = true
+		x = -x
+	}
 
-	var buf strings.Builder
-	for row := 0; row < numRows; row++ {
-		for startIndex := 0; startIndex < len(s)+stepSize; startIndex += stepSize {
-			if startIndex > 0 && row > 0 && row < numRows-1 {
-				leftIndex := startIndex - row
-				if leftIndex < len(s) {
-					buf.WriteByte(s[leftIndex])
+	arr := make([]byte, 0, 64)
+	for x > 0 {
+		e := x % 10
+		x = x / 10
+		arr = append(arr, byte(e))
+	}
+
+	var result int32
+	for i := 0; i < len(arr); i++ {
+		if i > 0 {
+			old := result
+			result *= 10
+			if !isNeg {
+				if result < old {
+					return 0
+				}
+			} else {
+				if result > old {
+					return 0
 				}
 			}
-			i := startIndex + row
-			if i < len(s) {
-				buf.WriteByte(s[i])
+		}
+		if !isNeg {
+			old := result
+			result += int32(arr[i])
+			if result < old {
+				return 0
+			}
+		} else {
+			old := result
+			result -= int32(arr[i])
+			if result > old {
+				return 0
 			}
 		}
 	}
-	return buf.String()
+	return int(result)
 }
