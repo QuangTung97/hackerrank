@@ -1,6 +1,6 @@
 module hackerrank
 
-go 1.20
+go 1.21.1
 
 require github.com/stretchr/testify v1.7.1
 
