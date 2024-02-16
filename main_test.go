@@ -7,11 +7,11 @@ import (
 )
 
 func TestExample(t *testing.T) {
-	assert.Equal(t, 42, myAtoi("42"))
-	assert.Equal(t, -42, myAtoi("  -42"))
-	assert.Equal(t, 42, myAtoi("  +42"))
-	assert.Equal(t, 4193, myAtoi("  4193 with words"))
+	assert.Equal(t, 1, maxArea([]int{1, 1}))
+	assert.Equal(t, 49, maxArea([]int{1, 8, 6, 2, 5, 4, 8, 3, 7}))
+	assert.Equal(t, 4, maxArea([]int{1, 2, 4, 3}))
+}
 
-	assert.Equal(t, 0, myAtoi(""))
-	assert.Equal(t, 2147483647, myAtoi("18446744073709551617"))
+func TestExample_err(t *testing.T) {
+	assert.Equal(t, 4, maxArea([]int{1, 2, 4, 3}))
 }
