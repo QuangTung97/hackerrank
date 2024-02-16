@@ -7,6 +7,12 @@ import (
 )
 
 func TestExample(t *testing.T) {
-	assert.Equal(t, "fl", longestCommonPrefix([]string{"flower", "flow", "flight"}))
-	assert.Equal(t, "f", longestCommonPrefix([]string{"f", "flow", "flight"}))
+	assert.Equal(t, true, isValid("()"))
+	assert.Equal(t, false, isValid("(]"))
+	assert.Equal(t, true, isValid("[]"))
+	assert.Equal(t, false, isValid("[)"))
+	assert.Equal(t, true, isValid("()[]{}"))
+	assert.Equal(t, true, isValid("{[]}"))
+	assert.Equal(t, false, isValid("["))
+	assert.Equal(t, false, isValid("]"))
 }

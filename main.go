@@ -1,23 +1,43 @@
 package main
 
-func longestCommonPrefix(strs []string) string {
-	end := 0
-Outer:
-	for {
-		index := end
-		if index >= len(strs[0]) {
-			break
+func isValid(s string) bool {
+	stack := make([]byte, 0, 1024)
+
+	for i := 0; i < len(s); i++ {
+		e := s[i]
+
+		if e == '(' || e == '[' || e == '{' {
+			stack = append(stack, e)
+			continue
 		}
-		firstCh := strs[0][index]
-		for _, s := range strs[1:] {
-			if index >= len(s) {
-				break Outer
+
+		if e == ')' || e == ']' || e == '}' {
+			if len(stack) == 0 {
+				return false
 			}
-			if s[index] != firstCh {
-				break Outer
+			last := stack[len(stack)-1]
+			if !isMatch(last, e) {
+				return false
 			}
+			stack = stack[:len(stack)-1]
+			continue
 		}
-		end++
+
+		return false
 	}
-	return strs[0][:end]
+
+	return len(stack) == 0
+}
+
+func isMatch(a, b byte) bool {
+	if a == '(' && b == ')' {
+		return true
+	}
+	if a == '[' && b == ']' {
+		return true
+	}
+	if a == '{' && b == '}' {
+		return true
+	}
+	return false
 }
