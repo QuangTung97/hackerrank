@@ -1,34 +1,12 @@
 package main
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
-
-func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
-	a := list1
-	b := list2
-
-	if a == nil && b == nil {
-		return nil
-	}
-
-	if a == nil {
-		return &ListNode{
-			Val:  b.Val,
-			Next: mergeTwoLists(a, b.Next),
+func removeDuplicates(nums []int) int {
+	nextIndex := 0
+	for i := 0; i < len(nums); i++ {
+		if i == 0 || nums[i] > nums[i-1] {
+			nums[nextIndex] = nums[i]
+			nextIndex++
 		}
 	}
-
-	if b == nil || a.Val < b.Val {
-		return &ListNode{
-			Val:  a.Val,
-			Next: mergeTwoLists(a.Next, b),
-		}
-	}
-
-	return &ListNode{
-		Val:  b.Val,
-		Next: mergeTwoLists(a, b.Next),
-	}
+	return nextIndex
 }
