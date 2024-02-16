@@ -1,51 +1,61 @@
 package main
 
-func reverse(x int) int {
-	if x == 1534236469 {
+import (
+	"math"
+)
+
+func findFirstNonSpace(s string) int {
+	for i := 0; i < len(s); i++ {
+		if s[i] != ' ' {
+			return i
+		}
+	}
+	return 0
+}
+
+func isOutside(result uint64, isNeg bool) (int, bool) {
+	if isNeg {
+		if result > -math.MinInt32 {
+			return math.MinInt32, true
+		}
+		return -int(result), false
+	}
+	if result > math.MaxInt32 {
+		return math.MaxInt32, true
+	}
+	return int(result), false
+}
+
+func myAtoi(s string) int {
+	start := findFirstNonSpace(s)
+
+	if start >= len(s) {
 		return 0
 	}
 
 	isNeg := false
-	if x < 0 {
+	if s[start] == '-' {
 		isNeg = true
-		x = -x
+		start++
+	} else if s[start] == '+' {
+		start++
 	}
 
-	arr := make([]byte, 0, 64)
-	for x > 0 {
-		e := x % 10
-		x = x / 10
-		arr = append(arr, byte(e))
-	}
-
-	var result int32
-	for i := 0; i < len(arr); i++ {
+	result := uint64(0)
+	for i := start; i < len(s); i++ {
+		if s[i] > '9' || s[i] < '0' {
+			break
+		}
 		if i > 0 {
-			old := result
 			result *= 10
-			if !isNeg {
-				if result < old {
-					return 0
-				}
-			} else {
-				if result > old {
-					return 0
-				}
-			}
 		}
-		if !isNeg {
-			old := result
-			result += int32(arr[i])
-			if result < old {
-				return 0
-			}
-		} else {
-			old := result
-			result -= int32(arr[i])
-			if result > old {
-				return 0
-			}
+		ch := s[i] - '0'
+		result += uint64(ch)
+		if newVal, ok := isOutside(result, isNeg); ok {
+			return newVal
 		}
 	}
-	return int(result)
+
+	newVal, _ := isOutside(result, isNeg)
+	return newVal
 }
