@@ -32,12 +32,31 @@ func TestToList(t *testing.T) {
 }
 
 func TestExample(t *testing.T) {
-	t.Run("normal", func(t *testing.T) {
-		r := mergeKLists([]*ListNode{
-			toList(2, 6),
-			toList(1, 4, 5),
-			toList(1, 3, 4),
-		})
-		assert.Equal(t, []int{1, 1, 2, 3, 4, 4, 5, 6}, fromList(r))
-	})
+	v := reverseLinkedList(toList(1, 2, 3), 4)
+	assert.Equal(t, []int{3, 2, 1}, fromList(v))
+
+	v = reverseLinkedList(toList(1, 2, 3, 4, 5), 3)
+	assert.Equal(t, []int{3, 2, 1, 4, 5}, fromList(v))
+}
+
+func TestFindK(t *testing.T) {
+	l := toList(1, 2, 3, 4, 5)
+	ok := findNextK(&l, 2)
+	assert.Equal(t, true, ok)
+
+	l = toList(1, 2, 3, 4, 5)
+	ok = findNextK(&l, 5)
+	assert.Equal(t, true, ok)
+
+	l = toList(1, 2, 3, 4, 5)
+	ok = findNextK(&l, 6)
+	assert.Equal(t, false, ok)
+}
+
+func TestExample_KGroup(t *testing.T) {
+	r := reverseKGroup(toList(1, 2, 3, 4, 5), 2)
+	assert.Equal(t, []int{2, 1, 4, 3, 5}, fromList(r))
+
+	r = reverseKGroup(toList(1, 2, 3, 4, 5), 3)
+	assert.Equal(t, []int{3, 2, 1, 4, 5}, fromList(r))
 }
