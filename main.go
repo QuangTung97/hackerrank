@@ -1,121 +1,72 @@
 package main
 
-type step struct {
-	ch       byte
-	isAll    bool
-	repeated bool
+import (
+	"container/heap"
+)
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
 }
 
-type state struct {
-	steps []step
-	set   map[int]struct{}
+type priorityQueue struct {
+	data []*ListNode
 }
 
-func (s *state) extendEpsilon() {
-	for {
-		var newElems []int
-		for index := range s.set {
-			if index >= len(s.steps) {
-				continue
-			}
-			if s.steps[index].repeated {
-				newElems = append(newElems, index+1)
-			}
-		}
+var _ heap.Interface = &priorityQueue{}
 
-		oldLen := len(s.set)
-		for _, e := range newElems {
-			s.set[e] = struct{}{}
-		}
-		if len(s.set) == oldLen {
-			return
-		}
-	}
+func (q *priorityQueue) Len() int {
+	return len(q.data)
 }
 
-func newState(steps []step) *state {
-	s := &state{
-		steps: steps,
-		set: map[int]struct{}{
-			0: {},
-		},
-	}
-	s.extendEpsilon()
-	return s
+func (q *priorityQueue) Less(i, j int) bool {
+	return q.data[i].Val < q.data[j].Val
 }
 
-func (s *state) accept(ch byte) bool {
-	newSet := map[int]struct{}{}
-	for index := range s.set {
-		if index >= len(s.steps) {
+func (q *priorityQueue) Swap(i, j int) {
+	q.data[i], q.data[j] = q.data[j], q.data[i]
+}
+
+func (q *priorityQueue) Push(x any) {
+	q.data = append(q.data, x.(*ListNode))
+}
+
+func (q *priorityQueue) Pop() any {
+	n := len(q.data)
+	r := q.data[n-1]
+	q.data = q.data[:n-1]
+	return r
+}
+
+func mergeKLists(input []*ListNode) *ListNode {
+	lists := make([]*ListNode, 0, len(input))
+	for _, e := range input {
+		if e == nil {
 			continue
 		}
-
-		st := s.steps[index]
-
-		if st.isAll {
-			if st.repeated {
-				newSet[index] = struct{}{}
-				continue
-			}
-			newSet[index+1] = struct{}{}
-			continue
-		}
-
-		if st.ch == ch {
-			if st.repeated {
-				newSet[index] = struct{}{}
-				continue
-			}
-			newSet[index+1] = struct{}{}
-			continue
-		}
+		lists = append(lists, e)
 	}
 
-	s.set = newSet
-	if len(s.set) == 0 {
-		return false
+	q := &priorityQueue{
+		data: lists,
+	}
+	heap.Init(q)
+
+	var head *ListNode
+	next := &head
+
+	for len(q.data) > 0 {
+		x := heap.Pop(q).(*ListNode)
+
+		newElem := x.Next
+		if newElem != nil {
+			heap.Push(q, newElem)
+		}
+		x.Next = nil
+
+		*next = x
+		next = &x.Next
 	}
 
-	s.extendEpsilon()
-	return true
-}
-
-func toSteps(p string) []step {
-	var result []step
-	for i := 0; i < len(p); i++ {
-		ch := p[i]
-
-		if ch == '*' {
-			result[len(result)-1].repeated = true
-			continue
-		}
-
-		if ch == '.' {
-			result = append(result, step{
-				isAll: true,
-			})
-			continue
-		}
-
-		result = append(result, step{
-			ch: ch,
-		})
-	}
-	return result
-}
-
-func isMatch(s string, p string) bool {
-	steps := toSteps(p)
-	st := newState(steps)
-
-	for i := range s {
-		ch := s[i]
-		if !st.accept(ch) {
-			return false
-		}
-	}
-
-	_, ok := st.set[len(steps)]
-	return ok
+	return head
 }
