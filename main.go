@@ -1,100 +1,121 @@
 package main
 
-import (
-	"sort"
-)
-
-func medianOf(nums []int) float64 {
-	n := len(nums)
-	index := n / 2
-	if n%2 == 0 {
-		return float64(nums[index]+nums[index-1]) / 2.0
-	}
-	return float64(nums[index])
+type step struct {
+	ch       byte
+	isAll    bool
+	repeated bool
 }
 
-func simpleForm(nums, simpler []int) float64 {
-	if len(simpler) == 0 {
-		return medianOf(nums)
-	}
+type state struct {
+	steps []step
+	set   map[int]struct{}
+}
 
-	x := simpler[0]
-
-	if len(nums) == 0 {
-		return float64(x)
-	}
-
-	n := len(nums)
-	index := n / 2
-	if n%2 == 0 {
-		v1 := nums[index-1]
-		v2 := nums[index]
-		if x < v1 {
-			return float64(v1)
-		}
-		if x > v2 {
-			return float64(v2)
-		}
-		return float64(x)
-	} else {
-		v := nums[index]
-		if len(nums) == 1 {
-			return float64(v+x) / 2.0
+func (s *state) extendEpsilon() {
+	for {
+		var newElems []int
+		for index := range s.set {
+			if index >= len(s.steps) {
+				continue
+			}
+			if s.steps[index].repeated {
+				newElems = append(newElems, index+1)
+			}
 		}
 
-		v1 := nums[index-1]
-		v2 := nums[index+1]
-
-		if x < v1 {
-			return float64(v1+v) / 2.0
+		oldLen := len(s.set)
+		for _, e := range newElems {
+			s.set[e] = struct{}{}
 		}
-		if x > v2 {
-			return float64(v+v2) / 2.0
+		if len(s.set) == oldLen {
+			return
 		}
-
-		return float64(v+x) / 2.0
 	}
 }
 
-func form2Solution(nums1 []int, nums2 []int) float64 {
-	var x []int
-	x = append(x, nums1...)
-	x = append(x, nums2...)
-	sort.Ints(x)
-	return medianOf(x)
+func newState(steps []step) *state {
+	s := &state{
+		steps: steps,
+		set: map[int]struct{}{
+			0: {},
+		},
+	}
+	s.extendEpsilon()
+	return s
 }
 
-func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
-	if len(nums1) <= 1 {
-		return simpleForm(nums2, nums1)
-	}
-	if len(nums2) <= 1 {
-		return simpleForm(nums1, nums2)
+func (s *state) accept(ch byte) bool {
+	newSet := map[int]struct{}{}
+	for index := range s.set {
+		if index >= len(s.steps) {
+			continue
+		}
+
+		st := s.steps[index]
+
+		if st.isAll {
+			if st.repeated {
+				newSet[index] = struct{}{}
+				continue
+			}
+			newSet[index+1] = struct{}{}
+			continue
+		}
+
+		if st.ch == ch {
+			if st.repeated {
+				newSet[index] = struct{}{}
+				continue
+			}
+			newSet[index+1] = struct{}{}
+			continue
+		}
 	}
 
-	if len(nums1) == 2 {
-		return form2Solution(nums2, nums1)
-	}
-	if len(nums2) == 2 {
-		return form2Solution(nums1, nums2)
+	s.set = newSet
+	if len(s.set) == 0 {
+		return false
 	}
 
-	lowerLen := func(x []int) int {
-		return (len(x) - 1) / 2
+	s.extendEpsilon()
+	return true
+}
+
+func toSteps(p string) []step {
+	var result []step
+	for i := 0; i < len(p); i++ {
+		ch := p[i]
+
+		if ch == '*' {
+			result[len(result)-1].repeated = true
+			continue
+		}
+
+		if ch == '.' {
+			result = append(result, step{
+				isAll: true,
+			})
+			continue
+		}
+
+		result = append(result, step{
+			ch: ch,
+		})
+	}
+	return result
+}
+
+func isMatch(s string, p string) bool {
+	steps := toSteps(p)
+	st := newState(steps)
+
+	for i := range s {
+		ch := s[i]
+		if !st.accept(ch) {
+			return false
+		}
 	}
 
-	smallerLen := min(lowerLen(nums1), lowerLen(nums2))
-	m1 := medianOf(nums1)
-	m2 := medianOf(nums2)
-
-	if m1 < m2 {
-		return findMedianSortedArrays(
-			nums1[smallerLen:],
-			nums2[:len(nums2)-smallerLen],
-		)
-	}
-	return findMedianSortedArrays(
-		nums1[:len(nums1)-smallerLen],
-		nums2[smallerLen:],
-	)
+	_, ok := st.set[len(steps)]
+	return ok
 }

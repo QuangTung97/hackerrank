@@ -6,83 +6,91 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMeanOf(t *testing.T) {
-	assert.Equal(t, 2.0, medianOf([]int{1, 2, 3}))
-	assert.Equal(t, 2.5, medianOf([]int{1, 2, 3, 4}))
-	assert.Equal(t, 1.0, medianOf([]int{1}))
-	assert.Equal(t, 4.5, medianOf([]int{4, 5}))
+func TestToSteps(t *testing.T) {
+	assert.Equal(t, []step{
+		{ch: 'a'},
+	}, toSteps("a"))
+
+	assert.Equal(t, []step{
+		{ch: 'a', repeated: true},
+	}, toSteps("a*"))
+
+	assert.Equal(t, []step{
+		{ch: 'a', repeated: false},
+		{ch: 'b', repeated: true},
+	}, toSteps("ab*"))
+
+	assert.Equal(t, []step{
+		{isAll: true, repeated: false},
+	}, toSteps("."))
+}
+
+func TestAccept(t *testing.T) {
+	t.Run("new state", func(t *testing.T) {
+		steps := []step{
+			{ch: 'a', repeated: true},
+			{ch: 'a', repeated: false},
+		}
+		s := newState(steps)
+		assert.Equal(t, &state{
+			steps: steps,
+			set: map[int]struct{}{
+				0: {},
+				1: {},
+			},
+		}, s)
+	})
+
+	t.Run("accept", func(t *testing.T) {
+		steps := []step{
+			{ch: 'a', repeated: true},
+			{ch: 'a', repeated: false},
+		}
+
+		s := newState(steps)
+		assert.Equal(t, map[int]struct{}{
+			0: {}, 1: {},
+		}, s.set)
+
+		assert.Equal(t, true, s.accept('a'))
+		assert.Equal(t, map[int]struct{}{
+			0: {}, 1: {}, 2: {},
+		}, s.set)
+
+		assert.Equal(t, true, s.accept('a'))
+		assert.Equal(t, map[int]struct{}{
+			0: {}, 1: {}, 2: {},
+		}, s.set)
+
+		assert.Equal(t, false, s.accept('b'))
+		assert.Equal(t, map[int]struct{}{}, s.set)
+
+		assert.Equal(t, false, s.accept('b'))
+		assert.Equal(t, map[int]struct{}{}, s.set)
+	})
 }
 
 func TestExample(t *testing.T) {
+	t.Run("simple", func(t *testing.T) {
+		assert.Equal(t, false, isMatch("aa", "a"))
+	})
+	t.Run("star", func(t *testing.T) {
+		assert.Equal(t, true, isMatch("aa", "a*"))
+	})
+	t.Run("dot", func(t *testing.T) {
+		assert.Equal(t, true, isMatch("ab", ".*"))
+	})
 	t.Run("case1", func(t *testing.T) {
-		v := findMedianSortedArrays(
-			[]int{1, 3},
-			[]int{2},
-		)
-		assert.Equal(t, 2.0, v)
+		assert.Equal(t, true, isMatch("aab", "c*a*b"))
 	})
-
-	t.Run("case2", func(t *testing.T) {
-		v := findMedianSortedArrays(
-			[]int{1, 2},
-			[]int{3, 4},
-		)
-		assert.Equal(t, 2.5, v)
+	t.Run("case1", func(t *testing.T) {
+		assert.Equal(t, []step{
+			{ch: 'a', repeated: true},
+			{ch: 'a', repeated: false},
+		}, toSteps("a*a"))
+		assert.Equal(t, true, isMatch("aaa", "a*a"))
 	})
-
-	t.Run("case3", func(t *testing.T) {
-		v := findMedianSortedArrays(
-			[]int{2},
-			[]int{},
-		)
-		assert.Equal(t, 2.0, v)
-	})
-
-	t.Run("case4", func(t *testing.T) {
-		v := findMedianSortedArrays(
-			[]int{3},
-			[]int{-2, -1},
-		)
-		assert.Equal(t, -1.0, v)
-	})
-
-	t.Run("case5", func(t *testing.T) {
-		v := findMedianSortedArrays(
-			[]int{2, 2, 4, 4},
-			[]int{2, 2, 4, 4},
-		)
-		assert.Equal(t, 3.0, v)
-	})
-
-	t.Run("case6", func(t *testing.T) {
-		v := findMedianSortedArrays(
-			[]int{1, 2},
-			[]int{-1, 3},
-		)
-		assert.Equal(t, 1.5, v)
-	})
-
-	t.Run("case7", func(t *testing.T) {
-		v := findMedianSortedArrays(
-			[]int{1},
-			[]int{2, 3, 4},
-		)
-		assert.Equal(t, 2.5, v)
-	})
-
-	t.Run("case8", func(t *testing.T) {
-		v := findMedianSortedArrays(
-			[]int{1, 2, 6, 7},
-			[]int{3, 4, 5, 8},
-		)
-		assert.Equal(t, 4.5, v)
-	})
-
-	t.Run("case9", func(t *testing.T) {
-		v := findMedianSortedArrays(
-			[]int{0, 0, 0, 0, 0},
-			[]int{-1, 0, 0, 0, 0, 0, 1},
-		)
-		assert.Equal(t, 0.0, v)
+	t.Run("not finish", func(t *testing.T) {
+		assert.Equal(t, false, isMatch("ab", "abc"))
 	})
 }
