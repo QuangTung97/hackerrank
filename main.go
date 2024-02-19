@@ -1,49 +1,64 @@
 package main
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
-
-func reverseLinkedList(l *ListNode, k int) *ListNode {
-	reverseLinkedListHead(&l, k)
-	return l
-}
-
-func reverseLinkedListHead(head **ListNode, k int) {
-	node := (*head).Next
-	prev := *head
-
-	num := k - 1
-	for i := 0; i < num && node != nil; i++ {
-		next := node.Next
-		node.Next = *head
-		prev.Next = next
-
-		*head = node
-		node = next
+func findConcatSubstrings(words []string, match []string) []int {
+	conf := map[string]int{}
+	for _, key := range match {
+		prev := conf[key]
+		conf[key] = prev + 1
 	}
-}
 
-func findNextK(head **ListNode, k int) bool {
-	for i := 0; i < k; i++ {
-		if *head == nil {
-			return false
+	var result []int
+
+	counter := map[string]int{}
+	start := 0
+	for end := 0; end < len(words); end++ {
+		// fmt.Println(counter, start, end, result)
+		w := words[end]
+		cmp := conf[w]
+
+		counter[w] = counter[w] + 1
+		newCount := counter[w]
+
+		if newCount > cmp {
+			for ; ; start++ {
+				startW := words[start]
+				counter[startW] = counter[startW] - 1
+				if startW == w {
+					start++
+					break
+				}
+			}
+			continue
 		}
-		head = &(*head).Next
+
+		if end-start+1 == len(match) {
+			startW := words[start]
+			counter[startW] = counter[startW] - 1
+			result = append(result, start)
+			start++
+		}
 	}
-	return true
+
+	return result
 }
 
-func reverseKGroup(inputHead *ListNode, k int) *ListNode {
-	currentHead := &inputHead
-	for {
-		ok := findNextK(currentHead, k)
-		if !ok {
-			return inputHead
+func findSubstring(s string, words []string) []int {
+	step := len(words[0])
+	result := []int{}
+
+	for offset := 0; offset < step; offset++ {
+		newInput := make([]string, 0, (len(s)+2)/3)
+		for i := offset; i < len(s); i += step {
+			if i+step > len(s) {
+				break
+			}
+			newInput = append(newInput, s[i:i+step])
 		}
-		nextHead := &(*currentHead).Next
-		reverseLinkedListHead(currentHead, k)
-		currentHead = nextHead
+
+		tmpResult := findConcatSubstrings(newInput, words)
+		for _, index := range tmpResult {
+			result = append(result, index*step+offset)
+		}
 	}
+	return result
 }
