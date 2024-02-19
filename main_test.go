@@ -6,30 +6,26 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFindConcat(t *testing.T) {
-	t.Run("normal", func(t *testing.T) {
-		result := findConcatSubstrings([]string{"a", "b", "c", "b", "a", "d"}, []string{"a", "b"})
-		assert.Equal(t, []int{0, 3}, result)
+func TestFindMin(t *testing.T) {
+	t.Run("simple", func(t *testing.T) {
+		assert.Equal(t, 2, findMin([]int{1, 3, 4}))
 	})
 
-	t.Run("case2", func(t *testing.T) {
-		result := findConcatSubstrings([]string{"c", "a", "b"}, []string{"a", "b"})
-		assert.Equal(t, []int{1}, result)
+	t.Run("empty", func(t *testing.T) {
+		assert.Equal(t, 1, findMin([]int{}))
 	})
 
-	t.Run("case3", func(t *testing.T) {
-		result := findConcatSubstrings([]string{"a", "b", "c", "b", "a", "d"}, []string{"a", "b", "c"})
-		assert.Equal(t, []int{0, 2}, result)
+	t.Run("first", func(t *testing.T) {
+		assert.Equal(t, 1, findMin([]int{2, 3, 4}))
+	})
+
+	t.Run("after last", func(t *testing.T) {
+		assert.Equal(t, 5, findMin([]int{1, 2, 3, 4}))
 	})
 }
 
-func TestFindSubstring(t *testing.T) {
+func TestEx(t *testing.T) {
 	t.Run("normal", func(t *testing.T) {
-		res := findSubstring("barfoothefoobarman", []string{"foo", "bar"})
-		assert.Equal(t, []int{0, 9}, res)
-	})
-	t.Run("normal", func(t *testing.T) {
-		res := findSubstring("wordgoodgoodgoodbestword", []string{"word", "good", "best", "word"})
-		assert.Equal(t, []int{}, res)
+		assert.Equal(t, 3, firstMissingPositive([]int{1, 2, 0}))
 	})
 }

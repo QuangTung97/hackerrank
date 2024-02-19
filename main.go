@@ -1,64 +1,42 @@
 package main
 
-func findConcatSubstrings(words []string, match []string) []int {
-	conf := map[string]int{}
-	for _, key := range match {
-		prev := conf[key]
-		conf[key] = prev + 1
-	}
-
-	var result []int
-
-	counter := map[string]int{}
-	start := 0
-	for end := 0; end < len(words); end++ {
-		// fmt.Println(counter, start, end, result)
-		w := words[end]
-		cmp := conf[w]
-
-		counter[w] = counter[w] + 1
-		newCount := counter[w]
-
-		if newCount > cmp {
-			for ; ; start++ {
-				startW := words[start]
-				counter[startW] = counter[startW] - 1
-				if startW == w {
-					start++
-					break
-				}
-			}
+func findMin(arr []int) int {
+	for i := 0; i < len(arr); i++ {
+		if arr[i] <= 0 {
 			continue
 		}
-
-		if end-start+1 == len(match) {
-			startW := words[start]
-			counter[startW] = counter[startW] - 1
-			result = append(result, start)
-			start++
-		}
-	}
-
-	return result
-}
-
-func findSubstring(s string, words []string) []int {
-	step := len(words[0])
-	result := []int{}
-
-	for offset := 0; offset < step; offset++ {
-		newInput := make([]string, 0, (len(s)+2)/3)
-		for i := offset; i < len(s); i += step {
-			if i+step > len(s) {
+		index := arr[i] - 1
+		arr[i] = 0
+		for {
+			if index >= len(arr) {
 				break
 			}
-			newInput = append(newInput, s[i:i+step])
-		}
-
-		tmpResult := findConcatSubstrings(newInput, words)
-		for _, index := range tmpResult {
-			result = append(result, index*step+offset)
+			nextNum := arr[index]
+			arr[index] = -1
+			if nextNum <= 0 {
+				break
+			}
+			index = nextNum - 1
 		}
 	}
-	return result
+	for i := range arr {
+		if arr[i] == 0 {
+			return i + 1
+		}
+	}
+	return len(arr) + 1
+}
+
+func firstMissingPositive(nums []int) int {
+	last := len(nums)
+	for i := 0; i < last; {
+		if nums[i] <= 0 {
+			last--
+			nums[i] = nums[last]
+			continue
+		}
+		i++
+	}
+	nums = nums[:last]
+	return findMin(nums)
 }
