@@ -1,42 +1,42 @@
 package main
 
-func findMin(arr []int) int {
-	for i := 0; i < len(arr); i++ {
-		if arr[i] <= 0 {
-			continue
-		}
-		index := arr[i] - 1
-		arr[i] = 0
-		for {
-			if index >= len(arr) {
-				break
-			}
-			nextNum := arr[index]
-			arr[index] = -1
-			if nextNum <= 0 {
-				break
-			}
-			index = nextNum - 1
-		}
-	}
-	for i := range arr {
-		if arr[i] == 0 {
-			return i + 1
-		}
-	}
-	return len(arr) + 1
+import (
+	"strings"
+)
+
+type symbol struct {
+	str string
+	val int
 }
 
-func firstMissingPositive(nums []int) int {
-	last := len(nums)
-	for i := 0; i < last; {
-		if nums[i] <= 0 {
-			last--
-			nums[i] = nums[last]
-			continue
+var symbols = []symbol{
+	{str: "I", val: 1},
+	{str: "IV", val: 4},
+	{str: "V", val: 5},
+	{str: "IX", val: 9},
+	{str: "X", val: 10},
+	{str: "XL", val: 40},
+	{str: "L", val: 50},
+	{str: "XC", val: 90},
+	{str: "C", val: 100},
+	{str: "CD", val: 400},
+	{str: "D", val: 500},
+	{str: "CM", val: 900},
+	{str: "M", val: 1000},
+}
+
+func intToRoman(num int) string {
+	var b strings.Builder
+Outer:
+	for num > 0 {
+		for i := len(symbols) - 1; i >= 0; i-- {
+			s := symbols[i]
+			if num >= s.val {
+				num -= s.val
+				b.WriteString(s.str)
+				continue Outer
+			}
 		}
-		i++
 	}
-	nums = nums[:last]
-	return findMin(nums)
+	return b.String()
 }
