@@ -1,31 +1,44 @@
 package main
 
-import (
-	"slices"
-)
+var charMap = map[byte][]string{
+	'2': {"a", "b", "c"},
+	'3': {"d", "e", "f"},
+	'4': {"g", "h", "i"},
+	'5': {"j", "k", "l"},
+	'6': {"m", "n", "o"},
+	'7': {"p", "q", "r", "s"},
+	'8': {"t", "u", "v"},
+	'9': {"w", "x", "y", "z"},
+}
 
-func nextPermutation(nums []int) {
-	mid := -1
-	for i := len(nums) - 1; i >= 1; i-- {
-		if nums[i] > nums[i-1] {
-			mid = i
-			break
-		}
+func appendStr(a string, b []string) []string {
+	var result []string
+	for _, e := range b {
+		result = append(result, a+e)
+	}
+	return result
+}
+
+func handleRecur(digits string) []string {
+	if len(digits) == 0 {
+		return []string{""}
 	}
 
-	if mid < 0 {
-		slices.Reverse(nums)
-		return
-	}
+	ch := digits[0]
 
-	right := mid
-	for i := mid + 1; i < len(nums); i++ {
-		if nums[i] <= nums[mid-1] {
-			break
-		}
-		right = i
+	var result []string
+	values := charMap[ch]
+	for _, v := range values {
+		result = append(result,
+			appendStr(v, handleRecur(digits[1:]))...,
+		)
 	}
-	nums[mid-1], nums[right] = nums[right], nums[mid-1]
+	return result
+}
 
-	slices.Reverse(nums[mid:])
+func letterCombinations(digits string) []string {
+	if len(digits) == 0 {
+		return nil
+	}
+	return handleRecur(digits)
 }
