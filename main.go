@@ -1,61 +1,31 @@
 package main
 
-import (
-	"sort"
-)
-
-func lowerBound(nums []int, x int) int {
-	first := 0
-	last := len(nums)
-	for first < last {
-		mid := first + (last-first)/2
-		if nums[mid] < x {
-			first = mid + 1
-		} else {
-			last = mid
-		}
-	}
-	return first
-}
-
-type triplet struct {
-	a int
-	b int
-	c int
-}
-
-func threeSum(nums []int) [][]int {
-	sort.Ints(nums)
-
-	existed := map[triplet]struct{}{}
-	var result [][]int
-
-	for i := 0; i < len(nums)-2; i++ {
-		for j := i + 1; j < len(nums)-1; j++ {
-			twoSum := nums[i] + nums[j]
-
-			searchNums := nums[j+1:]
-			for {
-				index := lowerBound(searchNums, -twoSum)
-				index2 := lowerBound(searchNums, -twoSum+1)
-				if index >= len(searchNums) || searchNums[index] != -twoSum {
-					break
-				}
-
-				newTuple := []int{nums[i], nums[j], searchNums[index]}
-				t := triplet{
-					a: newTuple[0],
-					b: newTuple[1],
-					c: newTuple[2],
-				}
-				_, ok := existed[t]
-				if !ok {
-					existed[t] = struct{}{}
-					result = append(result, newTuple)
-				}
-				searchNums = searchNums[index2:]
-			}
-		}
+func appendStr(a string, b []string) []string {
+	result := make([]string, 0, len(b))
+	for _, e := range b {
+		result = append(result, a+e)
 	}
 	return result
+}
+
+func genRecur(stackSize int, i int, n int) []string {
+	if i >= 2*n {
+		return []string{""}
+	}
+
+	remain := 2*n - i - 1
+
+	var result []string
+	if stackSize < n && stackSize < remain {
+		result = append(result, appendStr("(", genRecur(stackSize+1, i+1, n))...)
+	}
+	if stackSize > 0 {
+		result = append(result, appendStr(")", genRecur(stackSize-1, i+1, n))...)
+	}
+
+	return result
+}
+
+func generateParenthesis(n int) []string {
+	return genRecur(0, 0, n)
 }
