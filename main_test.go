@@ -6,19 +6,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestToList(t *testing.T) {
-	h := newList(1, 2, 3, 4)
-	assert.Equal(t, []int{1, 2, 3, 4}, toInts(h))
-}
-
-func TestRotate(t *testing.T) {
-	h := newList(1, 2, 3, 4, 5)
-	newL := rotateRight(h, 2)
-	assert.Equal(t, []int{4, 5, 1, 2, 3}, toInts(newL))
-}
-
-func TestRotate_Case2(t *testing.T) {
-	h := newList(1)
-	newL := rotateRight(h, 0)
-	assert.Equal(t, []int{1}, toInts(newL))
+func TestCanJump(t *testing.T) {
+	t.Run("normal", func(t *testing.T) {
+		assert.Equal(t, true, canJump([]int{2, 3, 1, 1, 4}))
+	})
+	t.Run("false", func(t *testing.T) {
+		assert.Equal(t, false, canJump([]int{3, 2, 1, 0, 4}))
+	})
+	t.Run("false", func(t *testing.T) {
+		assert.Equal(t, true, canJump([]int{0}))
+	})
 }
