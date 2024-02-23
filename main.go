@@ -1,31 +1,50 @@
 package main
 
-func appendStr(a string, b []string) []string {
-	result := make([]string, 0, len(b))
-	for _, e := range b {
-		result = append(result, a+e)
+func findRotatePoint(nums []int) int {
+	first := 0
+	last := len(nums) - 1
+	for first < last-1 {
+		mid := first + (last-first)/2
+		if nums[first] > nums[mid] {
+			last = mid
+		} else {
+			first = mid
+		}
 	}
-	return result
+	if nums[first] > nums[last] {
+		return last
+	}
+	return first
 }
 
-func genRecur(stackSize int, i int, n int) []string {
-	if i >= 2*n {
-		return []string{""}
+func lowerBound(nums []int, a int) int {
+	first := 0
+	last := len(nums)
+	for first < last {
+		mid := first + (last-first)/2
+		if a <= nums[mid] {
+			last = mid
+		} else {
+			first = mid + 1
+		}
 	}
-
-	remain := 2*n - i - 1
-
-	var result []string
-	if stackSize < n && stackSize < remain {
-		result = append(result, appendStr("(", genRecur(stackSize+1, i+1, n))...)
-	}
-	if stackSize > 0 {
-		result = append(result, appendStr(")", genRecur(stackSize-1, i+1, n))...)
-	}
-
-	return result
+	return first
 }
 
-func generateParenthesis(n int) []string {
-	return genRecur(0, 0, n)
+func search(nums []int, target int) int {
+	rotate := findRotatePoint(nums)
+
+	a := nums[:rotate]
+	index := lowerBound(a, target)
+	if index < len(a) && a[index] == target {
+		return index
+	}
+
+	b := nums[rotate:]
+	index = lowerBound(b, target)
+	if index < len(b) && b[index] == target {
+		return rotate + index
+	}
+
+	return -1
 }
