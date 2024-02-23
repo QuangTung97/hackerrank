@@ -1,44 +1,38 @@
 package main
 
-var charMap = map[byte][]string{
-	'2': {"a", "b", "c"},
-	'3': {"d", "e", "f"},
-	'4': {"g", "h", "i"},
-	'5': {"j", "k", "l"},
-	'6': {"m", "n", "o"},
-	'7': {"p", "q", "r", "s"},
-	'8': {"t", "u", "v"},
-	'9': {"w", "x", "y", "z"},
-}
+import (
+	"sort"
+)
 
-func appendStr(a string, b []string) []string {
-	var result []string
-	for _, e := range b {
-		result = append(result, a+e)
+func threeSum(nums []int) [][]int {
+	var result [][]int
+	sort.Ints(nums)
+	for i := 0; i < len(nums)-2; i++ {
+		if i > 0 && nums[i] == nums[i-1] {
+			continue
+		}
+
+		l := i + 1
+		r := len(nums) - 1
+		for l < r {
+			sum := nums[i] + nums[l] + nums[r]
+			if sum < 0 {
+				l++
+				continue
+			}
+			if sum > 0 {
+				r--
+				continue
+			}
+			result = append(result, []int{nums[i], nums[l], nums[r]})
+			l++
+			for l < r {
+				if nums[l] != nums[l-1] {
+					break
+				}
+				l++
+			}
+		}
 	}
 	return result
-}
-
-func handleRecur(digits string) []string {
-	if len(digits) == 0 {
-		return []string{""}
-	}
-
-	ch := digits[0]
-
-	var result []string
-	values := charMap[ch]
-	for _, v := range values {
-		result = append(result,
-			appendStr(v, handleRecur(digits[1:]))...,
-		)
-	}
-	return result
-}
-
-func letterCombinations(digits string) []string {
-	if len(digits) == 0 {
-		return nil
-	}
-	return handleRecur(digits)
 }

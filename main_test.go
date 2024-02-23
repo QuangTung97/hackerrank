@@ -7,8 +7,8 @@ import (
 )
 
 func TestFind(t *testing.T) {
-	assert.Equal(t, []string{"a", "b", "c"}, letterCombinations("2"))
-	assert.Equal(t, []string{
-		"ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf",
-	}, letterCombinations("23"))
+	assert.Equal(t, [][]int{
+		{-1, -1, 2},
+		{-1, 0, 1},
+	}, threeSum([]int{-1, 0, 1, 2, -1, -4}))
 }
