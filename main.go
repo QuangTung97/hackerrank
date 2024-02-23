@@ -1,46 +1,59 @@
 package main
 
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
+import (
+	"fmt"
+	"slices"
+	"sort"
+)
 
-func newList(num ...int) *ListNode {
-	var h *ListNode
-	for i := len(num) - 1; i >= 0; i-- {
-		h = &ListNode{
-			Next: h,
-			Val:  num[i],
+var visited = make([]bool, 50)
+
+func findSmallerOrEq(nums []int, x int) int {
+	for i := len(nums) - 1; i >= 0; i-- {
+		if nums[i] <= x {
+			return i
 		}
 	}
-	return h
+	return -1
 }
 
-func toInts(h *ListNode) []int {
-	var res []int
-	for e := h; e != nil; e = e.Next {
-		res = append(res, e.Val)
+func computeRecur(candidates []int, target int) [][]int {
+	fmt.Println(candidates, target)
+
+	if len(candidates) == 0 || target == 0 {
+		return [][]int{nil}
 	}
-	return res
-}
 
-func removeNthFromEnd(head *ListNode, n int) *ListNode {
-	result := head
-	p := &result
-	right := head
-	space := 0
+	if visited[target] {
+		return nil
+	}
+	visited[target] = true
 
-	for ; right != nil; right = right.Next {
-		space++
-		if space > n {
-			p = &(*p).Next
-			space--
+	index := findSmallerOrEq(candidates, target)
+	if index < 0 {
+		return nil
+	}
+
+	var result [][]int
+	for i := len(candidates) - 1; i >= 0; i-- {
+		last := candidates[i]
+		tmp := computeRecur(candidates[:i], target-last)
+
+		newResult := make([][]int, 0, len(tmp))
+		for _, e := range tmp {
+			e = slices.Clone(e)
+			newResult = append(
+				newResult,
+				append(e, last),
+			)
 		}
+		result = append(result, newResult...)
 	}
-
-	if space == n {
-		*p = (*p).Next
-	}
-
+	fmt.Println(result, candidates, target)
 	return result
+}
+
+func combinationSum(candidates []int, target int) [][]int {
+	sort.Ints(candidates)
+	return computeRecur(candidates, target)
 }
