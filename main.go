@@ -1,44 +1,45 @@
 package main
 
-import (
-	"math"
-	"sort"
-)
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
+type ListNode struct {
+	Val  int
+	Next *ListNode
 }
 
-func threeSumClosest(nums []int, target int) int {
-	sort.Ints(nums)
-
-	closest := math.MaxInt
-	result := 0
-
-	for i := 0; i < len(nums)-2; i++ {
-		l := i + 1
-		r := len(nums) - 1
-		for l < r {
-			sum3 := nums[i] + nums[l] + nums[r]
-			sum := sum3 - target
-
-			if abs(sum) < closest {
-				closest = abs(sum)
-				result = sum3
-			}
-			if sum < 0 {
-				l++
-				continue
-			}
-			if sum > 0 {
-				r--
-				continue
-			}
-			return sum3
+func newList(num ...int) *ListNode {
+	var h *ListNode
+	for i := len(num) - 1; i >= 0; i-- {
+		h = &ListNode{
+			Next: h,
+			Val:  num[i],
 		}
+	}
+	return h
+}
+
+func toInts(h *ListNode) []int {
+	var res []int
+	for e := h; e != nil; e = e.Next {
+		res = append(res, e.Val)
+	}
+	return res
+}
+
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	result := head
+	p := &result
+	right := head
+	space := 0
+
+	for ; right != nil; right = right.Next {
+		space++
+		if space > n {
+			p = &(*p).Next
+			space--
+		}
+	}
+
+	if space == n {
+		*p = (*p).Next
 	}
 
 	return result
