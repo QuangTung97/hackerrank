@@ -1,20 +1,38 @@
 package main
 
-func canJump(nums []int) bool {
-	isPossible := make([]bool, len(nums))
-	isPossible[len(nums)-1] = true
-Outer:
-	for i := len(nums) - 1; i >= 0; i-- {
-		maxIndex := i + nums[i]
-		if maxIndex >= len(nums) {
-			maxIndex = len(nums) - 1
-		}
-		for j := maxIndex; j > i; j-- {
-			if isPossible[j] {
-				isPossible[i] = true
-				continue Outer
-			}
+func lowerBound(nums []int, x int) int {
+	first := 0
+	last := len(nums)
+	for first < last {
+		mid := first + (last-first)/2
+		if x <= nums[mid] {
+			last = mid
+		} else {
+			first = mid + 1
 		}
 	}
-	return isPossible[0]
+	return first
+}
+
+func upperBound(nums []int, x int) int {
+	first := 0
+	last := len(nums)
+	for first < last {
+		mid := first + (last-first)/2
+		if x < nums[mid] {
+			last = mid
+		} else {
+			first = mid + 1
+		}
+	}
+	return first
+}
+
+func searchRange(nums []int, target int) []int {
+	start := lowerBound(nums, target)
+	end := upperBound(nums, target)
+	if start >= len(nums) || nums[start] != target {
+		return []int{-1, -1}
+	}
+	return []int{start, end - 1}
 }
