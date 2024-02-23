@@ -31,6 +31,20 @@ func lowerBound(nums []int, a int) int {
 	return first
 }
 
+func upperBound(nums []int, x int) int {
+	first := 0
+	last := len(nums)
+	for first < last {
+		mid := first + (last-first)/2
+		if x < nums[mid] {
+			last = mid
+		} else {
+			first = mid + 1
+		}
+	}
+	return first
+}
+
 func search(nums []int, target int) int {
 	rotate := findRotatePoint(nums)
 
