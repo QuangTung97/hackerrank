@@ -6,23 +6,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSearch(t *testing.T) {
-	assert.Equal(t, [][]int{
-		{-2, -1, 1, 2},
-		{-2, 0, 0, 2},
-		{-1, 0, 0, 1},
-	}, fourSum([]int{1, 0, -1, 0, -2, 2}, 0))
+func TestNew(t *testing.T) {
+	l := newList(1, 2, 3, 4)
+	assert.Equal(t, []int{1, 2, 3, 4}, toInts(l))
 }
 
-func TestSearch_Case2(t *testing.T) {
-	assert.Equal(t, [][]int{
-		{2, 2, 2, 2},
-	}, fourSum([]int{2, 2, 2, 2, 2}, 8))
+func TestSwap(t *testing.T) {
+	l := swapPairs(newList(1, 2, 3, 4))
+	assert.Equal(t, []int{2, 1, 4, 3}, toInts(l))
 }
 
-func TestSearch_Case3(t *testing.T) {
-	assert.Equal(t, [][]int{
-		{-2, -1, 1, 2},
-		{-1, -1, 1, 1},
-	}, fourSum([]int{-2, -1, -1, 1, 1, 2, 2}, 0))
+func TestSwap_2(t *testing.T) {
+	l := swapPairs(newList(1, 2, 3, 4, 5))
+	assert.Equal(t, []int{2, 1, 4, 3, 5}, toInts(l))
 }
