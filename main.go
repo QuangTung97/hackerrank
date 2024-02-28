@@ -1,36 +1,31 @@
 package main
 
 import (
-	"strconv"
-	"strings"
+	"slices"
 )
 
-func countAndSay(n int) string {
-	if n == 1 {
-		return "1"
+func intersect(a, b []int) bool {
+	if b[0] <= a[1] {
+		return true
 	}
+	return false
+}
 
-	last := countAndSay(n - 1)
-	var res strings.Builder
+func merge(intervals [][]int) [][]int {
+	slices.SortFunc(intervals, func(a, b []int) int {
+		return a[0] - b[0]
+	})
 
-	prevCh := last[0]
-	count := 1
-	for i := 1; i < len(last); i++ {
-		ch := last[i]
-		if ch == prevCh {
-			count++
-			continue
+	var result [][]int
+	result = append(result, intervals[0])
+
+	for i := 1; i < len(intervals); i++ {
+		last := result[len(result)-1]
+		if intersect(last, intervals[i]) {
+			last[1] = max(last[1], intervals[i][1])
+		} else {
+			result = append(result, intervals[i])
 		}
-
-		res.WriteString(strconv.FormatInt(int64(count), 10))
-		res.WriteByte(prevCh)
-
-		count = 1
-		prevCh = ch
 	}
-
-	res.WriteString(strconv.FormatInt(int64(count), 10))
-	res.WriteByte(prevCh)
-
-	return res.String()
+	return result
 }

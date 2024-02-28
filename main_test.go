@@ -6,7 +6,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCountAndSay(t *testing.T) {
-	assert.Equal(t, "1", countAndSay(1))
-	assert.Equal(t, "1211", countAndSay(4))
+func TestMerge(t *testing.T) {
+	assert.Equal(t, [][]int{
+		{1, 6},
+		{8, 10},
+		{15, 18},
+	}, merge([][]int{
+		{1, 3},
+		{2, 6},
+		{8, 10},
+		{15, 18},
+	}))
 }
