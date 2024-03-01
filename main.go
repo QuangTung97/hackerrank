@@ -1,42 +1,41 @@
 package main
 
-import (
-	"slices"
-)
-
-func nextPerm(nums []int) bool {
-	findIndex := -1
-	for i := len(nums) - 2; i >= 0; i-- {
-		if nums[i] < nums[i+1] {
-			findIndex = i
-			break
+func lowerBound(intervals [][]int, x int) int {
+	first := 0
+	last := len(intervals)
+	for first < last {
+		mid := first + (last-first)/2
+		if x <= intervals[mid][0] {
+			last = mid
+		} else {
+			first = mid + 1
 		}
 	}
-	if findIndex < 0 {
-		return false
-	}
-
-	swapIndex := len(nums) - 1
-	for j := findIndex + 2; j < len(nums); j++ {
-		if nums[j] <= nums[findIndex] {
-			swapIndex = j - 1
-			break
-		}
-	}
-
-	nums[findIndex], nums[swapIndex] = nums[swapIndex], nums[findIndex]
-	slices.Reverse(nums[findIndex+1:])
-	return true
+	return first
 }
 
-func permute(nums []int) [][]int {
-	slices.Sort(nums)
+func combine(intervals [][]int) [][]int {
 	var result [][]int
-	for {
-		result = append(result, slices.Clone(nums))
-		if !nextPerm(nums) {
-			break
+	for _, inv := range intervals {
+		if len(result) > 0 {
+			last := result[len(result)-1]
+			if last[1] >= inv[0] {
+				last[1] = max(last[1], inv[1])
+				continue
+			}
 		}
+		result = append(result, inv)
 	}
 	return result
+}
+
+func insert(input [][]int, newInterval []int) [][]int {
+	index := lowerBound(input, newInterval[0])
+
+	intervals := make([][]int, 0, len(input)+1)
+	intervals = append(intervals, input[:index]...)
+	intervals = append(intervals, newInterval)
+	intervals = append(intervals, input[index:]...)
+
+	return combine(intervals)
 }
