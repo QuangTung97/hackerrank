@@ -7,8 +7,28 @@ import (
 )
 
 func TestPower(t *testing.T) {
-	assert.Equal(t, 4.0, myPow(2.0, 2))
-	assert.Equal(t, 9.0, myPow(3.0, 2))
-	assert.Equal(t, 27.0, myPow(3.0, 3))
-	assert.Equal(t, 1.0/27.0, myPow(3.0, -3))
+	assert.Equal(t, [][]int{
+		{1, 2, 3},
+		{1, 3, 2},
+		{2, 1, 3},
+		{2, 3, 1},
+		{3, 1, 2},
+		{3, 2, 1},
+	}, permute([]int{1, 2, 3}))
+}
+
+func TestNext(t *testing.T) {
+	a := []int{1, 2, 3}
+
+	assert.Equal(t, true, nextPerm(a))
+	assert.Equal(t, []int{1, 3, 2}, a)
+
+	assert.Equal(t, true, nextPerm(a))
+	assert.Equal(t, []int{2, 1, 3}, a)
+
+	assert.Equal(t, true, nextPerm(a))
+	assert.Equal(t, []int{2, 3, 1}, a)
+
+	assert.Equal(t, true, nextPerm(a))
+	assert.Equal(t, []int{3, 1, 2}, a)
 }
