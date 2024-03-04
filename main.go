@@ -1,41 +1,52 @@
 package main
 
-func lowerBound(intervals [][]int, x int) int {
-	first := 0
-	last := len(intervals)
-	for first < last {
-		mid := first + (last-first)/2
-		if x <= intervals[mid][0] {
-			last = mid
-		} else {
-			first = mid + 1
-		}
-	}
-	return first
+type position struct {
+	rows int
+	cols int
 }
 
-func combine(intervals [][]int) [][]int {
-	var result [][]int
-	for _, inv := range intervals {
-		if len(result) > 0 {
-			last := result[len(result)-1]
-			if last[1] >= inv[0] {
-				last[1] = max(last[1], inv[1])
-				continue
+func nextPos(p position, n int) position {
+	p2 := position{
+		rows: p.rows * 2,
+		cols: p.cols * 2,
+	}
+
+	mid := position{
+		rows: n - 1,
+		cols: n - 1,
+	}
+	v := position{
+		rows: p2.rows - mid.rows,
+		cols: p2.cols - mid.cols,
+	}
+	vo := position{
+		rows: v.cols,
+		cols: -v.rows,
+	}
+	return position{
+		rows: (mid.rows + vo.rows) / 2,
+		cols: (mid.cols + vo.cols) / 2,
+	}
+}
+
+func rotate(matrix [][]int) {
+	n := len(matrix[0])
+	mid := n / 2
+	colMid := (n + 1) / 2
+	for row := 0; row < mid; row++ {
+		for col := 0; col < colMid; col++ {
+			prev := matrix[row][col]
+			p := position{
+				rows: row,
+				cols: col,
 			}
+			for i := 0; i < 3; i++ {
+				p = nextPos(p, n)
+				tmp := matrix[p.rows][p.cols]
+				matrix[p.rows][p.cols] = prev
+				prev = tmp
+			}
+			matrix[row][col] = prev
 		}
-		result = append(result, inv)
 	}
-	return result
-}
-
-func insert(input [][]int, newInterval []int) [][]int {
-	index := lowerBound(input, newInterval[0])
-
-	intervals := make([][]int, 0, len(input)+1)
-	intervals = append(intervals, input[:index]...)
-	intervals = append(intervals, newInterval)
-	intervals = append(intervals, input[index:]...)
-
-	return combine(intervals)
 }
