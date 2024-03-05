@@ -1,60 +1,42 @@
 package main
 
-import (
-	"math"
-)
-
-func bitLen(a int) int {
-	if a == 0 {
-		return 1
-	}
-
-	n := 0
-	for a > 0 {
-		n++
-		a = a >> 1
-	}
-	return n
+type state struct {
+	count [][]int
 }
 
-func divide(dividend int, divisor int) int {
-	sign := 1
-	if dividend < 0 {
-		sign = -sign
-		dividend = -dividend
+func newState(m int, n int) *state {
+	a := make([][]int, m)
+	for i := range a {
+		a[i] = make([]int, n)
 	}
-	if divisor < 0 {
-		sign = -sign
-		divisor = -divisor
+	a[0][0] = 1
+	return &state{
+		count: a,
+	}
+}
+
+func (s *state) uniquePaths(row, col int) int {
+	if s.count[row][col] > 0 {
+		return s.count[row][col]
 	}
 
-	aLen := bitLen(dividend)
-	bLen := bitLen(divisor)
-	if aLen < bLen {
-		return 0
+	top := 0
+	if row > 0 {
+		top = s.uniquePaths(row-1, col)
 	}
 
-	remain := aLen - bLen
-	result := 0
-	for shift := remain; shift >= 0; shift-- {
-		result <<= 1
-
-		v := divisor << shift
-		if v > dividend {
-			continue
-		}
-		dividend -= v
-		result |= 1
-	}
-	if sign < 0 {
-		result = -result
+	left := 0
+	if col > 0 {
+		left = s.uniquePaths(row, col-1)
 	}
 
-	if result > math.MaxInt32 {
-		return math.MaxInt32
-	}
-	if result < math.MinInt32 {
-		return math.MinInt32
-	}
-	return result
+	res := top + left
+	s.count[row][col] = res
+	return res
+}
+
+func uniquePaths(m int, n int) int {
+	s := newState(m, n)
+	res := s.uniquePaths(m-1, n-1)
+	return res
 }
