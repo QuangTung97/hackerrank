@@ -1,42 +1,67 @@
 package main
 
-type state struct {
-	count [][]int
+import (
+	"math"
+)
+
+func computeInit(nums []int) []int {
+	n := len(nums)
+	size := 0
+	for n > 1 {
+		size += n
+		n = (n + 1) / 2
+	}
+	size++
+	nodes := make([]int, size)
+
+	copy(nodes[size-len(nums):], nums)
+	return nodes
 }
 
-func newState(m int, n int) *state {
-	a := make([][]int, m)
-	for i := range a {
-		a[i] = make([]int, n)
-	}
-	a[0][0] = 1
-	return &state{
-		count: a,
-	}
+func coverRange(i int, n int) int {
+	return 0
 }
 
-func (s *state) uniquePaths(row, col int) int {
-	if s.count[row][col] > 0 {
-		return s.count[row][col]
+func buildTree(nums []int) []int {
+	nodes := computeInit(nums)
+
+	n := len(nums)
+	start := len(nodes) - n
+	for {
+		n = (n + 1) / 2
+		oldStart := start
+		start -= n
+
+		for i := 0; i < n; i++ {
+			l := oldStart + 2*i
+			r := oldStart + 2*i + 1
+			nodes[start+i] = min(nodes[l], nodes[r])
+		}
+		if start == 0 {
+			break
+		}
 	}
 
-	top := 0
-	if row > 0 {
-		top = s.uniquePaths(row-1, col)
-	}
-
-	left := 0
-	if col > 0 {
-		left = s.uniquePaths(row, col-1)
-	}
-
-	res := top + left
-	s.count[row][col] = res
-	return res
+	return nodes
 }
 
-func uniquePaths(m int, n int) int {
-	s := newState(m, n)
-	res := s.uniquePaths(m-1, n-1)
-	return res
+func treeMinOf(nodes []int, end int) int {
+	return 0
+}
+
+func jump(nums []int) int {
+	minArr := make([]int, len(nums))
+	for i := range minArr {
+		minArr[i] = math.MaxInt32
+	}
+	minArr[0] = 0
+	for i := 1; i < len(nums); i++ {
+		for j := 0; j < i; j++ {
+			step := nums[j]
+			if j+step >= i {
+				minArr[i] = min(minArr[i], minArr[j]+1)
+			}
+		}
+	}
+	return minArr[len(minArr)-1]
 }
