@@ -7,11 +7,9 @@ import (
 )
 
 func TestMaxSubArr(t *testing.T) {
-	assert.Equal(t, [][]string{
-		{"bat"},
-		{"ate", "eat", "tea"},
-		{"nat", "tan"},
-	}, groupAnagrams([]string{
-		"eat", "tea", "tan", "ate", "nat", "bat",
-	}))
+	assert.Equal(t, [][]int{
+		{2, 2, 2, 2},
+		{2, 3, 3},
+		{3, 5},
+	}, combinationSum([]int{2, 3, 5}, 8))
 }

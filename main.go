@@ -4,54 +4,73 @@ import (
 	"slices"
 )
 
-func strToBits(s string) [52]uint16 {
-	var res [52]uint16
-	for i := 0; i < len(s); i++ {
-		ch := s[i]
-		pos := ch - 'A'
-		if ch >= 'a' {
-			pos = ch - 'a' + 26
-		}
-		res[pos]++
-	}
-	return res
+type state struct {
+	visited []bool
+	output  [][][]int
+	existed map[string]struct{}
 }
 
-func groupAnagrams(strs []string) [][]string {
-	type position struct {
-		key   [52]uint16
-		index int
+func newState() *state {
+	return &state{
+		visited: make([]bool, 41),
+		output:  make([][][]int, 41),
+		existed: map[string]struct{}{},
+	}
+}
+
+func numsToKey(nums []int) string {
+	res := make([]byte, 0, len(nums))
+	for _, n := range nums {
+		res = append(res, byte(n)+'A')
+	}
+	slices.Sort(res)
+	return string(res)
+}
+
+func (s *state) compute(candidates []int, target int) [][]int {
+	if s.visited[target] {
+		return s.output[target]
 	}
 
-	posList := make([]position, 0, len(strs))
-	for index, s := range strs {
-		posList = append(posList, position{
-			key:   strToBits(s),
-			index: index,
-		})
-	}
+	s.visited[target] = true
 
-	slices.SortFunc(posList, func(a, b position) int {
-		return slices.Compare(a.key[:], b.key[:])
-	})
+	var l [][]int
 
-	result := make([][]string, 0, len(strs)/2)
-	result = append(result, []string{
-		strs[posList[0].index],
-	})
+	for _, e := range candidates {
+		if e > target {
+			break
+		}
 
-	lastKey := posList[0].key
-	for _, pos := range posList[1:] {
-		if pos.key == lastKey {
-			n := len(result)
-			result[n-1] = append(result[n-1], strs[pos.index])
+		if target == e {
+			l = append(l, []int{
+				e,
+			})
 			continue
 		}
-		lastKey = pos.key
-		result = append(result, []string{
-			strs[pos.index],
-		})
+
+		newTarget := target - e
+		subLists := s.compute(candidates, newTarget)
+		for _, subList := range subLists {
+			res := make([]int, 0, len(subList)+1)
+			res = append(res, e)
+			res = append(res, subList...)
+
+			key := numsToKey(res)
+			_, ok := s.existed[key]
+			if ok {
+				continue
+			}
+			s.existed[key] = struct{}{}
+			l = append(l, res)
+		}
 	}
 
-	return result
+	s.output[target] = l
+	return s.output[target]
+}
+
+func combinationSum(candidates []int, target int) [][]int {
+	slices.Sort(candidates)
+	s := newState()
+	return s.compute(candidates, target)
 }
