@@ -4,30 +4,35 @@ import (
 	"slices"
 )
 
+func strToBits(s string) [52]uint16 {
+	var res [52]uint16
+	for i := 0; i < len(s); i++ {
+		ch := s[i]
+		pos := ch - 'A'
+		if ch >= 'a' {
+			pos = ch - 'a' + 26
+		}
+		res[pos]++
+	}
+	return res
+}
+
 func groupAnagrams(strs []string) [][]string {
 	type position struct {
-		key   string
+		key   [52]uint16
 		index int
 	}
 
 	posList := make([]position, 0, len(strs))
 	for index, s := range strs {
-		key := []byte(s)
-		slices.Sort(key)
 		posList = append(posList, position{
-			key:   string(key),
+			key:   strToBits(s),
 			index: index,
 		})
 	}
 
 	slices.SortFunc(posList, func(a, b position) int {
-		if a.key < b.key {
-			return -1
-		}
-		if a.key == b.key {
-			return 0
-		}
-		return 1
+		return slices.Compare(a.key[:], b.key[:])
 	})
 
 	result := make([][]string, 0, len(strs)/2)
