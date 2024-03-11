@@ -54,7 +54,7 @@ func computeNext(p position, d position, w window) (position, position, window) 
 	return p, d, w
 }
 
-func spiralOrder(matrix [][]int) []int {
+func generateMatrix(n int) [][]int {
 	p := position{
 		row: 0,
 		col: 0,
@@ -65,17 +65,21 @@ func spiralOrder(matrix [][]int) []int {
 	}
 	w := window{
 		top:   -1,
-		bot:   len(matrix),
+		bot:   n,
 		left:  -1,
-		right: len(matrix[0]),
+		right: n,
 	}
 
-	num := len(matrix) * len(matrix[0])
-	result := make([]int, 0, num)
-	result = append(result, matrix[0][0])
-	for i := 0; i < num-1; i++ {
+	num := n * n
+	result := make([][]int, n)
+	for i := range result {
+		result[i] = make([]int, n)
+	}
+
+	result[0][0] = 1
+	for i := 1; i < num; i++ {
 		p, d, w = computeNext(p, d, w)
-		result = append(result, matrix[p.row][p.col])
+		result[p.row][p.col] = i + 1
 	}
 	return result
 }

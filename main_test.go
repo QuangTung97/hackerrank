@@ -114,11 +114,9 @@ func TestNext(t *testing.T) {
 }
 
 func TestSpiralOrder(t *testing.T) {
-	assert.Equal(t, []int{
-		1, 2, 3, 6, 9, 8, 7, 4, 5,
-	}, spiralOrder([][]int{
+	assert.Equal(t, [][]int{
 		{1, 2, 3},
-		{4, 5, 6},
-		{7, 8, 9},
-	}))
+		{8, 9, 4},
+		{7, 6, 5},
+	}, generateMatrix(3))
 }
