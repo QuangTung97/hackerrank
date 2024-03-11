@@ -1,36 +1,33 @@
 package main
 
-func computeNextCounts(newCount []int, oldCount []int, obstacles []int) {
-	for i := range newCount {
-		newCount[i] = 0
+func computeNext(newSum []int, oldSum []int, row []int) {
+	for i := range newSum {
 		if i > 0 {
-			newCount[i] = newCount[i-1]
+			newSum[i] = min(newSum[i-1], oldSum[i])
+		} else {
+			newSum[i] = oldSum[i]
 		}
-		newCount[i] += oldCount[i]
-		if obstacles[i] > 0 {
-			newCount[i] = 0
-		}
+		newSum[i] += row[i]
 	}
 }
+func minPathSum(grid [][]int) int {
+	oldSum := make([]int, len(grid[0]))
+	newSum := make([]int, len(grid[0]))
 
-func uniquePathsWithObstacles(obstacleGrid [][]int) int {
-	oldCount := make([]int, len(obstacleGrid[0]))
-	newCount := make([]int, len(obstacleGrid[0]))
-
-	for i := range oldCount {
-		if obstacleGrid[0][i] > 0 {
-			break
+	for i := range oldSum {
+		if i == 0 {
+			oldSum[i] = grid[0][0]
+		} else {
+			oldSum[i] = oldSum[i-1] + grid[0][i]
 		}
-		oldCount[i] = 1
 	}
 
-	for row := 1; row < len(obstacleGrid); row++ {
-		computeNextCounts(newCount, oldCount, obstacleGrid[row])
-		tmp := oldCount
-		oldCount = newCount
-		newCount = tmp
+	for row := 1; row < len(grid); row++ {
+		computeNext(newSum, oldSum, grid[row])
+		tmp := oldSum
+		oldSum = newSum
+		newSum = tmp
 	}
 
-	n := len(obstacleGrid[0])
-	return oldCount[n-1]
+	return oldSum[len(grid[0])-1]
 }

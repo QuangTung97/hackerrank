@@ -7,9 +7,9 @@ import (
 )
 
 func TestUniquePaths(t *testing.T) {
-	assert.Equal(t, 2, uniquePathsWithObstacles([][]int{
-		{0, 0, 0},
-		{0, 1, 0},
-		{0, 0, 0},
+	assert.Equal(t, 7, minPathSum([][]int{
+		{1, 3, 1},
+		{1, 5, 1},
+		{4, 2, 1},
 	}))
 }
