@@ -1,63 +1,59 @@
 package main
 
 import (
-	"strings"
+	"math"
 )
 
-type token struct {
-	name string
-}
-
-func findNextSlash(s string) string {
-	for i := 0; i < len(s); i++ {
-		if s[i] == '/' {
-			return s[:i]
-		}
-	}
-	return s
-}
-
-func convertToTokens(path string) []token {
-	var result []token
-	for i := 0; i < len(path); {
-		if path[i] == '/' {
-			i++
+func clearRow(matrix [][]int, row int, rootCol int) {
+	for col := 0; col < len(matrix[0]); col++ {
+		if col == rootCol {
 			continue
 		}
-		name := findNextSlash(path[i:])
-		i += len(name)
-		result = append(result, token{
-			name: name,
-		})
+		if col > rootCol && matrix[row][col] == math.MaxInt {
+			break
+		}
+		matrix[row][col] = 0
 	}
-	return result
 }
 
-func simplifyPath(path string) string {
-	tokens := convertToTokens(path)
-
-	var newTokens []token
-	for _, tk := range tokens {
-		if tk.name == "." {
+func clearCol(matrix [][]int, col int, rootRow int) {
+	for row := 0; row < len(matrix); row++ {
+		if row == rootRow {
 			continue
 		}
-		if tk.name == ".." {
-			if len(newTokens) > 0 {
-				newTokens = newTokens[:len(newTokens)-1]
+		if row > rootRow && matrix[row][col] == math.MaxInt {
+			break
+		}
+		matrix[row][col] = 0
+	}
+}
+
+func setZeroes(matrix [][]int) {
+	m := len(matrix)
+	n := len(matrix[0])
+
+	for row := 0; row < m; row++ {
+		for col := 0; col < n; col++ {
+			if matrix[row][col] == 0 {
+				matrix[row][col] = math.MaxInt
 			}
-			continue
 		}
-		newTokens = append(newTokens, tk)
 	}
 
-	if len(newTokens) == 0 {
-		return "/"
+	for row := 0; row < m; row++ {
+		for col := 0; col < n; col++ {
+			if matrix[row][col] == math.MaxInt {
+				clearRow(matrix, row, col)
+				clearCol(matrix, col, row)
+			}
+		}
 	}
 
-	var buf strings.Builder
-	for _, tk := range newTokens {
-		buf.WriteString("/")
-		buf.WriteString(tk.name)
+	for row := 0; row < m; row++ {
+		for col := 0; col < n; col++ {
+			if matrix[row][col] == math.MaxInt {
+				matrix[row][col] = 0
+			}
+		}
 	}
-	return buf.String()
 }

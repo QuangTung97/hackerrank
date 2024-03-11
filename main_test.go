@@ -6,48 +6,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConvert(t *testing.T) {
-	assert.Equal(t, []token{
-		{name: "home"},
-	}, convertToTokens("/home"))
-
-	assert.Equal(t, []token{
-		{name: "home"},
-	}, convertToTokens("/home/"))
-
-	assert.Equal(t, []token{
-		{name: "home"},
-		{name: "user01"},
-	}, convertToTokens("/home/user01"))
-
-	assert.Equal(t, []token{
-		{name: "home"},
-		{name: "user01"},
-	}, convertToTokens("/home//user01"))
-
-	assert.Equal(t, []token{
-		{name: "home"},
-		{name: ".."},
-		{name: "user01"},
-	}, convertToTokens("/home/../user01"))
-
-	assert.Equal(t, []token{
-		{name: "home"},
-		{name: "."},
-		{name: "user01"},
-	}, convertToTokens("/home/./user01"))
+func TestSetZeros(t *testing.T) {
+	m := [][]int{
+		{1, 1, 1},
+		{1, 0, 1},
+		{1, 1, 1},
+	}
+	setZeroes(m)
+	assert.Equal(t, [][]int{
+		{1, 0, 1},
+		{0, 0, 0},
+		{1, 0, 1},
+	}, m)
 }
 
-func TestSimplify(t *testing.T) {
-	p := simplifyPath("/home/tung/")
-	assert.Equal(t, "/home/tung", p)
-
-	p = simplifyPath("/home/./tung")
-	assert.Equal(t, "/home/tung", p)
-
-	p = simplifyPath("/home/user01/../tung/")
-	assert.Equal(t, "/home/tung", p)
-
-	p = simplifyPath("/..")
-	assert.Equal(t, "/", p)
+func TestSetZeros_Ex2(t *testing.T) {
+	m := [][]int{
+		{0},
+		{1},
+	}
+	setZeroes(m)
+	assert.Equal(t, [][]int{
+		{0},
+		{0},
+	}, m)
 }
