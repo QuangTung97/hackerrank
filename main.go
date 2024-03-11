@@ -1,59 +1,43 @@
 package main
 
-import (
-	"math"
-)
-
-func clearRow(matrix [][]int, row int, rootCol int) {
-	for col := 0; col < len(matrix[0]); col++ {
-		if col == rootCol {
-			continue
-		}
-		if col > rootCol && matrix[row][col] == math.MaxInt {
-			break
-		}
-		matrix[row][col] = 0
-	}
-}
-
-func clearCol(matrix [][]int, col int, rootRow int) {
-	for row := 0; row < len(matrix); row++ {
-		if row == rootRow {
-			continue
-		}
-		if row > rootRow && matrix[row][col] == math.MaxInt {
-			break
-		}
-		matrix[row][col] = 0
-	}
-}
-
-func setZeroes(matrix [][]int) {
-	m := len(matrix)
+func searchRow(matrix [][]int, target int) int {
 	n := len(matrix[0])
-
-	for row := 0; row < m; row++ {
-		for col := 0; col < n; col++ {
-			if matrix[row][col] == 0 {
-				matrix[row][col] = math.MaxInt
-			}
+	first := 0
+	last := len(matrix)
+	for first < last {
+		mid := first + (last-first)/2
+		if target <= matrix[mid][n-1] {
+			last = mid
+		} else {
+			first = mid + 1
 		}
 	}
+	return first
+}
 
-	for row := 0; row < m; row++ {
-		for col := 0; col < n; col++ {
-			if matrix[row][col] == math.MaxInt {
-				clearRow(matrix, row, col)
-				clearCol(matrix, col, row)
-			}
+func searchCol(row []int, target int) int {
+	first := 0
+	last := len(row)
+	for first < last {
+		mid := first + (last-first)/2
+		if target <= row[mid] {
+			last = mid
+		} else {
+			first = mid + 1
 		}
 	}
+	return first
+}
 
-	for row := 0; row < m; row++ {
-		for col := 0; col < n; col++ {
-			if matrix[row][col] == math.MaxInt {
-				matrix[row][col] = 0
-			}
-		}
+func searchMatrix(matrix [][]int, target int) bool {
+	foundRow := searchRow(matrix, target)
+	if foundRow >= len(matrix) {
+		return false
 	}
+
+	index := searchCol(matrix[foundRow], target)
+	if index >= len(matrix[foundRow]) {
+		return false
+	}
+	return matrix[foundRow][index] == target
 }
