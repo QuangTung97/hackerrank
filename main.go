@@ -1,46 +1,56 @@
 package main
 
-func checkRegion(
-	board [][]byte,
-	rowBegin int, rowEnd int,
-	colBegin int, colEnd int,
-) bool {
-	set := map[byte]struct{}{}
-	for row := rowBegin; row < rowEnd; row++ {
-		for col := colBegin; col < colEnd; col++ {
-			e := board[row][col]
-			if e == '.' {
-				continue
-			}
-			num := e - '0'
-			_, existed := set[num]
-			if existed {
-				return false
-			}
-			set[num] = struct{}{}
-		}
-	}
-	return true
+import (
+	"slices"
+)
+
+type state struct {
 }
 
-func isValidSudoku(board [][]byte) bool {
-	for row := 0; row < 9; row++ {
-		if ok := checkRegion(board, row, row+1, 0, 9); !ok {
-			return false
-		}
+func newState() *state {
+	return &state{}
+}
+
+func (s *state) combineSum(candidates []int, target int) [][]int {
+	if len(candidates) == 0 {
+		return nil
 	}
-	for col := 0; col < 9; col++ {
-		if ok := checkRegion(board, 0, 9, col, col+1); !ok {
-			return false
+
+	var result [][]int
+	for index, e := range candidates {
+		if e > target {
+			break
 		}
-	}
-	for row := 0; row < 9; row += 3 {
-		for col := 0; col < 9; col += 3 {
-			if ok := checkRegion(board, row, row+3, col, col+3); !ok {
-				return false
-			}
+
+		if index > 0 && candidates[index-1] == e {
+			continue
+		}
+
+		if e == target {
+			result = append(result, []int{
+				target,
+			})
+		}
+
+		newTarget := target - e
+		if newTarget < e {
+			continue
+		}
+
+		subList := s.combineSum(candidates[index+1:], target-e)
+		for _, l := range subList {
+			newList := make([]int, 0, len(l)+1)
+			newList = append(newList, e)
+			newList = append(newList, l...)
+			result = append(result, newList)
 		}
 	}
 
-	return true
+	return result
+}
+
+func combinationSum2(candidates []int, target int) [][]int {
+	slices.Sort(candidates)
+	s := newState()
+	return s.combineSum(candidates, target)
 }
