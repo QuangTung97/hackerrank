@@ -1,85 +1,36 @@
 package main
 
-type position struct {
-	row int
-	col int
+func computeNextCounts(newCount []int, oldCount []int, obstacles []int) {
+	for i := range newCount {
+		newCount[i] = 0
+		if i > 0 {
+			newCount[i] = newCount[i-1]
+		}
+		newCount[i] += oldCount[i]
+		if obstacles[i] > 0 {
+			newCount[i] = 0
+		}
+	}
 }
 
-type window struct {
-	top   int
-	bot   int
-	left  int
-	right int
-}
+func uniquePathsWithObstacles(obstacleGrid [][]int) int {
+	oldCount := make([]int, len(obstacleGrid[0]))
+	newCount := make([]int, len(obstacleGrid[0]))
 
-func computeNext(p position, d position, w window) (position, position, window) {
-	rotate := func() {
-		newDir := position{
-			row: d.col,
-			col: -d.row,
+	for i := range oldCount {
+		if obstacleGrid[0][i] > 0 {
+			break
 		}
-		d = newDir
+		oldCount[i] = 1
 	}
 
-	if d.col == 1 {
-		if p.col+1 >= w.right {
-			w.top++
-			rotate()
-		}
+	for row := 1; row < len(obstacleGrid); row++ {
+		computeNextCounts(newCount, oldCount, obstacleGrid[row])
+		tmp := oldCount
+		oldCount = newCount
+		newCount = tmp
 	}
 
-	if d.row == 1 {
-		if p.row+1 >= w.bot {
-			w.right--
-			rotate()
-		}
-	}
-
-	if d.col == -1 {
-		if p.col-1 <= w.left {
-			w.bot--
-			rotate()
-		}
-	}
-
-	if d.row == -1 {
-		if p.row-1 <= w.top {
-			w.left++
-			rotate()
-		}
-	}
-
-	p.row += d.row
-	p.col += d.col
-	return p, d, w
-}
-
-func generateMatrix(n int) [][]int {
-	p := position{
-		row: 0,
-		col: 0,
-	}
-	d := position{
-		row: 0,
-		col: 1,
-	}
-	w := window{
-		top:   -1,
-		bot:   n,
-		left:  -1,
-		right: n,
-	}
-
-	num := n * n
-	result := make([][]int, n)
-	for i := range result {
-		result[i] = make([]int, n)
-	}
-
-	result[0][0] = 1
-	for i := 1; i < num; i++ {
-		p, d, w = computeNext(p, d, w)
-		result[p.row][p.col] = i + 1
-	}
-	return result
+	n := len(obstacleGrid[0])
+	return oldCount[n-1]
 }
