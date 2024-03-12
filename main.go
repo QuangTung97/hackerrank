@@ -1,43 +1,30 @@
 package main
 
-func searchRow(matrix [][]int, target int) int {
-	n := len(matrix[0])
-	first := 0
-	last := len(matrix)
-	for first < last {
-		mid := first + (last-first)/2
-		if target <= matrix[mid][n-1] {
-			last = mid
-		} else {
-			first = mid + 1
+func minDistance(word1 string, word2 string) int {
+	oldTable := make([]int, len(word1)+1)
+	newTable := make([]int, len(word1)+1)
+	for i := range oldTable {
+		oldTable[i] = i
+	}
+
+	for j := 1; j <= len(word2); j++ {
+		for i := 0; i <= len(word1); i++ {
+			if i == 0 {
+				newTable[i] = j
+				continue
+			}
+			ch1 := word1[i-1]
+			ch2 := word2[j-1]
+			if ch1 == ch2 {
+				newTable[i] = oldTable[i-1]
+				continue
+			}
+
+			newTable[i] = min(newTable[i-1], oldTable[i-1], oldTable[i]) + 1
 		}
+		tmp := oldTable
+		oldTable = newTable
+		newTable = tmp
 	}
-	return first
-}
-
-func searchCol(row []int, target int) int {
-	first := 0
-	last := len(row)
-	for first < last {
-		mid := first + (last-first)/2
-		if target <= row[mid] {
-			last = mid
-		} else {
-			first = mid + 1
-		}
-	}
-	return first
-}
-
-func searchMatrix(matrix [][]int, target int) bool {
-	foundRow := searchRow(matrix, target)
-	if foundRow >= len(matrix) {
-		return false
-	}
-
-	index := searchCol(matrix[foundRow], target)
-	if index >= len(matrix[foundRow]) {
-		return false
-	}
-	return matrix[foundRow][index] == target
+	return oldTable[len(word1)]
 }
