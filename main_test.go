@@ -45,19 +45,10 @@ func TestNextEx2(t *testing.T) {
 	assert.Equal(t, false, ok)
 }
 
-func TestCombine(t *testing.T) {
+func TestSubset(t *testing.T) {
 	assert.Equal(t, [][]int{
-		{1, 2}, {1, 3}, {1, 4},
-		{2, 3}, {2, 4},
-		{3, 4},
-	}, combine(4, 2))
-}
-
-func TestCombine_Ex2(t *testing.T) {
-	assert.Equal(t, [][]int{
-		{1, 2, 3},
-		{1, 2, 4},
-		{1, 3, 4},
-		{2, 3, 4},
-	}, combine(4, 3))
+		{},
+		{1}, {2},
+		{1, 2},
+	}, subsets([]int{1, 2}))
 }
