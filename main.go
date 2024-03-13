@@ -1,44 +1,24 @@
 package main
 
-func nextIter(it []int, n int) bool {
-	for i := len(it) - 1; i >= 0; i-- {
-		right := len(it) - 1 - i
-		if it[i] >= n-right {
-			continue
-		}
-
-		next := it[i]
-		for ; i < len(it); i++ {
-			next++
-			it[i] = next
-		}
-		return true
-	}
-	return false
-}
+import (
+	"math/bits"
+)
 
 func subsets(nums []int) [][]int {
 	n := len(nums)
-	result := make([][]int, 0, 1<<n)
-	result = append(result, []int{})
+	maxVal := uint16(1 << n)
+	result := make([][]int, 0, maxVal)
+	for i := uint16(0); i < maxVal; i++ {
+		value := make([]int, 0, bits.OnesCount16(i))
+		mask := uint16(1)
+		for offset := uint16(0); offset < uint16(n); offset++ {
+			if i&mask != 0 {
+				value = append(value, nums[offset])
+			}
+			mask <<= 1
+		}
 
-	for size := 1; size <= n; size++ {
-		iter := make([]int, size)
-		for i := range iter {
-			iter[i] = i
-		}
-		for {
-			value := make([]int, 0, size)
-			for i := 0; i < size; i++ {
-				value = append(value, nums[iter[i]])
-			}
-			result = append(result, value)
-			ok := nextIter(iter, n-1)
-			if !ok {
-				break
-			}
-		}
+		result = append(result, value)
 	}
-
 	return result
 }
